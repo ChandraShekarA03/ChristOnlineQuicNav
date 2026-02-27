@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --christ-blue: #1F3C88;
+  --christ-blue-dark: #163D7A;
+  --christ-gold: #D4AF37;
+  --christ-gold-dark: #C9A227;
+  --christ-ivory: #EDE6DA;
+  --christ-beige: #E8E1D3;
+  --background-start: #E8E1D3;
+  --background-end: #F5F2ED;
+}
+
+body {
+  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+  color: var(--christ-blue-dark);
+  font-family: 'Inter', 'Georgia', serif;
+  line-height: 1.6;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(31, 60, 136, 0.1), 0 0 20px rgba(201, 162, 39, 0.05);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--christ-blue) 0%, var(--christ-blue-dark) 100%);
+  color: white;
+  border: 2px solid var(--christ-gold);
+  box-shadow: 0 4px 15px rgba(31, 60, 136, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(31, 60, 136, 0.4);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--christ-gold) 0%, var(--christ-gold-dark) 100%);
+  color: var(--christ-blue-dark);
+  border: 2px solid var(--christ-gold);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--christ-blue);
+  border: 2px solid var(--christ-blue);
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: var(--christ-blue);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Professional typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  color: var(--christ-blue-dark);
+}
+
+p {
+  color: rgba(22, 61, 122, 0.8);
+}
+
+/* Card styling */
+.card-professional {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(31, 60, 136, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card-professional:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(31, 60, 136, 0.12);
+}
+
+/* Status indicators */
+.status-online {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.status-warning {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.status-offline {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
