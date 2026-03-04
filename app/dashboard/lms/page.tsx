@@ -109,14 +109,14 @@ export default function LMSPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">LMS Module Management</h1>
-        <Button onClick={() => setShowAddForm(true)} className="btn-primary">
+        <Button onClick={() => setShowForm(true)} className="btn-primary">
           <Plus className="w-4 h-4 mr-2" />
           Add Module
         </Button>
       </div>
 
       {/* Add Module Form */}
-      {showAddForm && (
+      {showForm && (
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Add New LMS Module</h2>
           <form onSubmit={handleAddModule} className="space-y-4">
@@ -169,7 +169,7 @@ export default function LMSPage() {
               <Button type="submit" className="btn-primary">
                 Add Module
               </Button>
-              <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                 Cancel
               </Button>
             </div>

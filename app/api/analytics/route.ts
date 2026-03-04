@@ -42,18 +42,18 @@ export async function GET(request: NextRequest) {
     })
 
     // Get module names
-    const moduleIds = moduleUsage.map(m => m.moduleId)
+    const moduleIds = moduleUsage.map((m: any) => m.moduleId)
     const modules = await prisma.lMSModule.findMany({
       where: { id: { in: moduleIds } },
       select: { id: true, name: true }
     })
 
-    const moduleMap = modules.reduce((acc, mod) => {
+    const moduleMap = modules.reduce((acc: Record<string, string>, mod: any) => {
       acc[mod.id] = mod.name
       return acc
     }, {} as Record<string, string>)
 
-    const topModules = moduleUsage.map(m => ({
+    const topModules = moduleUsage.map((m: any) => ({
       name: moduleMap[m.moduleId] || 'Unknown',
       usage: m._count.moduleId,
       tokens: m._sum.tokensUsed || 0
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'asc' }
     })
 
-    const tokenUsageByDay = dailyUsage.map(day => ({
+    const tokenUsageByDay = dailyUsage.map((day: any) => ({
       date: day.createdAt.toISOString().split('T')[0],
       tokens: day._sum.tokensUsed || 0
     }))
