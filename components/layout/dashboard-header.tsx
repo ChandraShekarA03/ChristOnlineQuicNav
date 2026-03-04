@@ -13,7 +13,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ onMenuClick, onThemeToggle, currentTheme }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 glass border-b border-light dark:border-medium">
+    <header className="bg-glass border-b border-light dark:border-medium backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left section */}
         <div className="flex items-center gap-4">
