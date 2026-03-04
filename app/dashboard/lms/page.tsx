@@ -5,20 +5,20 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Play, Settings, BarChart3 } from 'lucide-react'
 
-interface LLMModule {
+interface LMSModule {
   id: string
   name: string
-  description?: string
-  promptTemplate: string
+  description: string
+  prompt: string
   model: string
   createdAt: string
 }
 
-export default function LLMPage() {
-  const [modules, setModules] = useState<LLMModule[]>([])
+export default function LMSPage() {
+  const [modules, setModules] = useState<LMSModule[]>([])
   const [loading, setLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [selectedModule, setSelectedModule] = useState<LLMModule | null>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [selectedModule, setSelectedModule] = useState<LMSModule | null>(null)
   const [userInput, setUserInput] = useState('')
   const [response, setResponse] = useState('')
   const [executing, setExecuting] = useState(false)
@@ -35,7 +35,7 @@ export default function LLMPage() {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch('/api/llm')
+      const response = await fetch('/api/lms')
       if (response.ok) {
         const data = await response.json()
         setModules(data)
@@ -50,7 +50,7 @@ export default function LLMPage() {
   const handleAddModule = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch('/api/llm', {
+      const res = await fetch('/api/lms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export default function LLMPage() {
     setResponse('')
 
     try {
-      const res = await fetch('/api/llm/execute', {
+      const res = await fetch('/api/lms/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,7 +100,7 @@ export default function LLMPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading LLM modules...</div>
+        <div className="text-white">Loading LMS modules...</div>
       </div>
     )
   }
@@ -108,7 +108,7 @@ export default function LLMPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">LLM Module Management</h1>
+        <h1 className="text-3xl font-bold text-white">LMS Module Management</h1>
         <Button onClick={() => setShowAddForm(true)} className="btn-primary">
           <Plus className="w-4 h-4 mr-2" />
           Add Module
@@ -118,7 +118,7 @@ export default function LLMPage() {
       {/* Add Module Form */}
       {showAddForm && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Add New LLM Module</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Add New LMS Module</h2>
           <form onSubmit={handleAddModule} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -215,7 +215,7 @@ export default function LLMPage() {
           {modules.length === 0 && (
             <Card className="p-12 text-center">
               <div className="text-white/70">
-                No LLM modules found. Add your first module!
+                No LMS modules found. Add your first module!
               </div>
             </Card>
           )}

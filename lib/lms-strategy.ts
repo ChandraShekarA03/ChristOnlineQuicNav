@@ -1,11 +1,11 @@
-// Strategy Pattern for LLM Provider Abstraction
+// Strategy Pattern for LMS Provider Abstraction
 
-export interface LLMProvider {
+export interface LMSProvider {
   generateResponse(prompt: string, model: string): Promise<string>
   getTokenUsage(): number
 }
 
-export class OpenAIProvider implements LLMProvider {
+export class OpenAIProvider implements LMSProvider {
   private tokenUsage = 0
 
   async generateResponse(prompt: string, model: string): Promise<string> {
@@ -19,7 +19,7 @@ export class OpenAIProvider implements LLMProvider {
   }
 }
 
-export class AnthropicProvider implements LLMProvider {
+export class AnthropicProvider implements LMSProvider {
   private tokenUsage = 0
 
   async generateResponse(prompt: string, model: string): Promise<string> {
@@ -33,8 +33,8 @@ export class AnthropicProvider implements LLMProvider {
   }
 }
 
-export class LLMProviderFactory {
-  static createProvider(provider: string): LLMProvider {
+export class LMSProviderFactory {
+  static createProvider(provider: string): LMSProvider {
     switch (provider.toLowerCase()) {
       case 'openai':
         return new OpenAIProvider()

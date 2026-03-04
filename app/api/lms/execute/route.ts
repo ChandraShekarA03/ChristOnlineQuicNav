@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { LLMProviderFactory } from '@/lib/llm-strategy'
+import { LMSProviderFactory } from '@/lib/lms-strategy'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,30 +18,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Get the LLM module
-    const llmModule = await prisma.lLMModule.findUnique({
+    // Get the LMS module
+    const lmsModule = await prisma.lMSModule.findUnique({
       where: { id: moduleId }
     })
 
-    if (!llmModule) {
-      return NextResponse.json({ error: 'LLM module not found' }, { status: 404 })
+    if (!lmsModule) {
+      return NextResponse.json({ error: 'LMS module not found' }, { status: 404 })
     }
 
     // Create the full prompt
-    const fullPrompt = llmModule.promptTemplate.replace('{input}', userInput)
+    const fullPrompt = lmsModule.promptTemplate.replace('{input}', userInput)
 
-    // Get LLM provider (for demo, using OpenAI)
-    const provider = LLMProviderFactory.createProvider('openai')
+    // Get LMS provider (for demo, using OpenAI)
+    const provider = LMSProviderFactory.createProvider('openai')
 
-    // Execute the LLM request
-    const response = await provider.generateResponse(fullPrompt, llmModule.model)
+    // Execute the LMS request
+    const response = await provider.generateResponse(fullPrompt, lmsModule.model)
     const tokensUsed = provider.getTokenUsage()
 
     // Log the usage
-    await prisma.lLMLog.create({
+    await prisma.lMSLog.create({
       data: {
         userId: session.user.id,
-        moduleId: llmModule.id,
+        moduleId: lmsModule.id,
         tokensUsed,
         prompt: fullPrompt,
         response
@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       response,
       tokensUsed,
-      module: llmModule.name
+      module: lmsModule.name
     })
   } catch (error) {
-    console.error('LLM execution error:', error)
+    console.error('LMS execution error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

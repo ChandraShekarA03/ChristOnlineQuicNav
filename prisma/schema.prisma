@@ -49,7 +49,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   links         Link[]
-  llmLogs       LLMLog[]
+  lmsLogs       LMSLog[]
 }
 
 model VerificationToken {
@@ -73,7 +73,7 @@ model Link {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model LLMModule {
+model LMSModule {
   id          String     @id @default(cuid())
   name        String
   description String?
@@ -81,10 +81,10 @@ model LLMModule {
   model       String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  logs        LLMLog[]
+  logs        LMSLog[]
 }
 
-model LLMLog {
+model LMSLog {
   id         String    @id @default(cuid())
   userId     String
   moduleId   String
@@ -93,5 +93,5 @@ model LLMLog {
   response   String?
   createdAt  DateTime  @default(now())
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  module     LLMModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  module     LMSModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 }

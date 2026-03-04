@@ -41,16 +41,16 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary dark:from-secondary dark:via-secondary-dark dark:to-surface flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 glass-card">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Sign In</h1>
-          <p className="text-white/70">Christ Faculty Hub</p>
+          <h1 className="heading-primary font-heading mb-2">Sign In</h1>
+          <p className="text-secondary font-body">Christ Faculty Hub</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-primary mb-2 font-body">
               Email
             </label>
             <input
@@ -58,14 +58,14 @@ export default function SignIn() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-christ-gold focus:border-transparent"
+              className="w-full px-4 py-3 bg-surface border border-medium rounded-lg text-primary placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body"
               placeholder="your.email@christuniversity.in"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-primary mb-2 font-body">
               Password
             </label>
             <input
@@ -73,14 +73,14 @@ export default function SignIn() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-christ-gold focus:border-transparent"
+              className="w-full px-4 py-3 bg-surface border border-medium rounded-lg text-primary placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body"
               placeholder="Enter your password"
               required
             />
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm text-center">
+            <div className="text-danger text-sm text-center font-body">
               {error}
             </div>
           )}
@@ -95,7 +95,7 @@ export default function SignIn() {
         </form>
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-christ-gold hover:text-christ-gold/80 text-sm">
+          <Link href="/" className="text-primary hover:text-primary-dark text-sm font-body transition-colors">
             ← Back to Home
           </Link>
         </div>

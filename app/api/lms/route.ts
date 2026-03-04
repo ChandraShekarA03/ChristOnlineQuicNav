@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { LLMProviderFactory } from '@/lib/llm-strategy'
+import { LMSProviderFactory } from '@/lib/lms-strategy'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const modules = await prisma.lLMModule.findMany({
+    const modules = await prisma.lMSModule.findMany({
       orderBy: { createdAt: 'desc' }
     })
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const llmModule = await prisma.lLMModule.create({
+    const lmsModule = await prisma.lMSModule.create({
       data: {
         name,
         description,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(llmModule, { status: 201 })
+    return NextResponse.json(lmsModule, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

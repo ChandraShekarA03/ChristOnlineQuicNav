@@ -11,11 +11,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total statistics
-    const [totalLinks, totalUsers, totalLLMLogs, totalTokens] = await Promise.all([
+    const [totalLinks, totalUsers, totalLMSLogs, totalTokens] = await Promise.all([
       prisma.link.count(),
       prisma.user.count(),
-      prisma.lLMLog.count(),
-      prisma.lLMLog.aggregate({
+      prisma.lMSLog.count(),
+      prisma.lMSLog.aggregate({
         _sum: { tokensUsed: true }
       })
     ])
@@ -28,12 +28,12 @@ export async function GET(request: NextRequest) {
       where: { createdAt: { gte: sevenDaysAgo } }
     })
 
-    const recentLogs = await prisma.lLMLog.count({
+    const recentLogs = await prisma.lMSLog.count({
       where: { createdAt: { gte: sevenDaysAgo } }
     })
 
-    // Get most used LLM modules
-    const moduleUsage = await prisma.lLMLog.groupBy({
+    // Get most used LMS modules
+    const moduleUsage = await prisma.lMSLog.groupBy({
       by: ['moduleId'],
       _count: { moduleId: true },
       _sum: { tokensUsed: true },
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     // Get module names
     const moduleIds = moduleUsage.map(m => m.moduleId)
-    const modules = await prisma.lLMModule.findMany({
+    const modules = await prisma.lMSModule.findMany({
       where: { id: { in: moduleIds } },
       select: { id: true, name: true }
     })
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const dailyUsage = await prisma.lLMLog.groupBy({
+    const dailyUsage = await prisma.lMSLog.groupBy({
       by: ['createdAt'],
       _sum: { tokensUsed: true },
       where: { createdAt: { gte: thirtyDaysAgo } },
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       overview: {
         totalLinks,
         totalUsers,
-        totalLLMLogs,
+        totalLMSLogs,
         totalTokens: totalTokens._sum.tokensUsed || 0
       },
       recentActivity: {

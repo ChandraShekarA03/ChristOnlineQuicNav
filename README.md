@@ -1,6 +1,6 @@
 # Christ Faculty Hub
 
-A production-grade Next.js 14 web application for Christ University faculty to centrally manage important links and LLM modules.
+A production-grade Next.js 14 web application for Christ University faculty to centrally manage important links and LMS modules.
 
 ## Features
 
@@ -10,15 +10,15 @@ A production-grade Next.js 14 web application for Christ University faculty to c
 - **Prisma ORM**: PostgreSQL database integration
 - **NextAuth**: Secure authentication
 - **Zustand**: State management
-- **Strategy Pattern**: LLM provider abstraction
-- **Token Usage Logging**: Track LLM usage
+- **Strategy Pattern**: LMS provider abstraction
+- **Token Usage Logging**: Track LMS usage
 - **API Routes**: Backend logic handlers
 
 ## Modules
 
 1. **Dashboard**: Analytics, metrics, usage stats
 2. **Link Management**: CRUD operations, categories, department filtering, search
-3. **LLM Module Management**: Prompt templates, model selection, logs
+3. **LMS Module Management**: Prompt templates, model selection, logs
 4. **Analytics**: Charts, token usage, most-used modules
 5. **User Management**: Admin-only user management
 
@@ -74,7 +74,7 @@ The application will be available at http://localhost:3000
 │   ├── auth.ts           # NextAuth configuration
 │   ├── prisma.ts         # Prisma client
 │   ├── store.ts          # Zustand store
-│   └── llm-strategy.ts   # LLM provider strategy
+│   └── lms-strategy.ts   # LMS provider strategy
 ├── prisma/               # Database schema
 └── middleware.ts         # Route protection
 ```

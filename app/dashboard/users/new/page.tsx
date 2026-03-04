@@ -89,9 +89,9 @@ export default function NewUserPage() {
       case 'SUPER_ADMIN':
         return 'Full system access and configuration privileges'
       case 'ADMIN':
-        return 'Manage links, LLM modules, and oversee user accounts'
+        return 'Manage links, LMS modules, and oversee user accounts'
       default:
-        return 'Basic access to links and LLM modules for academic work'
+        return 'Basic access to links and LMS modules for academic work'
     }
   }
 

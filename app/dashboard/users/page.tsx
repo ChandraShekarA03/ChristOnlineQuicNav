@@ -206,14 +206,14 @@ export default function UsersPage() {
             <User className="w-6 h-6 text-christ-blue-dark/60 mt-1" />
             <div>
               <div className="text-christ-blue-dark font-semibold mb-1">Faculty</div>
-              <div className="text-christ-blue-dark/70 text-sm">Basic access to links and LLM modules for academic work</div>
+              <div className="text-christ-blue-dark/70 text-sm">Basic access to links and LMS modules for academic work</div>
             </div>
           </div>
           <div className="flex items-start gap-4 p-4 rounded-lg bg-christ-blue/10">
             <Shield className="w-6 h-6 text-christ-blue mt-1" />
             <div>
               <div className="text-christ-blue-dark font-semibold mb-1">Admin</div>
-              <div className="text-christ-blue-dark/70 text-sm">Manage links, LLM modules, and oversee user accounts</div>
+              <div className="text-christ-blue-dark/70 text-sm">Manage links, LMS modules, and oversee user accounts</div>
             </div>
           </div>
           <div className="flex items-start gap-4 p-4 rounded-lg bg-christ-gold/10">
