@@ -60,7 +60,7 @@ export default function LMSPage() {
 
       if (res.ok) {
         setNewModule({ name: '', description: '', promptTemplate: '', model: 'gpt-3.5-turbo' })
-        setShowAddForm(false)
+        setShowForm(false)
         fetchModules()
       }
     } catch (error) {
