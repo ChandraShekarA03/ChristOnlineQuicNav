@@ -6,18 +6,19 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { Loader2 } from 'lucide-react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 gap-2 font-body',
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 gap-2 font-body active:scale-[0.98] transform-gpu',
   {
     variants: {
       variant: {
-        default: 'btn-primary',
-        secondary: 'btn-secondary',
-        accent: 'btn-primary',
-        ghost: 'bg-transparent text-primary hover:bg-surface-hover hover:text-primary-dark',
-        outline: 'btn-outline',
+        default: 'btn-primary hover:shadow-lg hover:-translate-y-0.5',
+        secondary: 'btn-secondary hover:shadow-md hover:-translate-y-0.5',
+        accent: 'btn-primary hover:shadow-lg hover:-translate-y-0.5',
+        ghost: 'bg-transparent text-primary hover:bg-surface-hover hover:text-primary-dark hover:scale-105',
+        outline: 'btn-outline hover:shadow-lg hover:-translate-y-0.5',
         link: 'text-primary hover:text-primary-dark underline-offset-4 hover:underline p-0 h-auto',
-        destructive: 'bg-danger text-white hover:bg-danger/90 focus:ring-danger shadow-sm hover:shadow-md',
-        success: 'bg-success text-white hover:bg-success/90 focus:ring-success shadow-sm hover:shadow-md',
+        destructive: 'bg-danger text-white hover:bg-danger/90 focus:ring-danger shadow-sm hover:shadow-lg hover:-translate-y-0.5',
+        success: 'bg-success text-white hover:bg-success/90 focus:ring-success shadow-sm hover:shadow-lg hover:-translate-y-0.5',
+        glow: 'btn-primary animate-pulse-glow hover:shadow-xl',
       },
       size: {
         sm: 'h-8 px-3 text-xs',

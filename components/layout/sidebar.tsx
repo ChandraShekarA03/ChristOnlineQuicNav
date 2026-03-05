@@ -73,12 +73,12 @@ export function Sidebar({ onClose }: SidebarProps) {
   return (
     <div className={cn(
       'flex h-screen flex-col border-r transition-all duration-300',
-      'border-light bg-gradient-to-b from-surface to-background-secondary',
-      'dark:border-medium dark:from-surface-elevated dark:to-surface',
+      'border-primary-100 dark:border-primary-900/50',
+      'bg-white/80 dark:bg-[#12152e]/90 backdrop-blur-xl',
       collapsed ? 'w-20' : 'w-64'
     )}>
       {/* Header */}
-      <div className="flex h-16 items-center justify-between px-6 border-b border-light dark:border-medium">
+      <div className="flex h-16 items-center justify-between px-6 border-b border-primary-100 dark:border-primary-900/50">
         {!collapsed && (
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg">
@@ -114,8 +114,8 @@ export function Sidebar({ onClose }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {/* Primary Navigation */}
-        <div className="space-y-1">
-          {navigation.map((item) => {
+        <div className="space-y-1 animate-stagger">
+          {navigation.map((item, index) => {
             const isActive = pathname === item.href
             return (
               <Link
@@ -123,25 +123,34 @@ export function Sidebar({ onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  'group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 font-body',
+                  'group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 font-body',
+                  'hover:translate-x-1',
                   isActive
-                    ? 'nav-item-active'
-                    : 'nav-item-inactive'
+                    ? 'nav-item-active shadow-lg'
+                    : 'nav-item-inactive hover:bg-primary-50/50 dark:hover:bg-primary-900/20'
                 )}
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <div className="flex items-center gap-3">
-                  <item.icon className={cn(
-                    'h-5 w-5 transition-colors',
+                  <div className={cn(
+                    'p-1.5 rounded-lg transition-all duration-300',
                     isActive 
-                      ? 'text-primary-600 dark:text-primary-400' 
-                      : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
-                  )} />
+                      ? 'bg-white/20' 
+                      : 'bg-transparent group-hover:bg-primary-100 dark:group-hover:bg-primary-900/30'
+                  )}>
+                    <item.icon className={cn(
+                      'h-5 w-5 transition-all duration-300',
+                      isActive 
+                        ? 'text-white' 
+                        : 'text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 group-hover:scale-110'
+                    )} />
+                  </div>
                   {!collapsed && (
                     <span className="truncate">{item.name}</span>
                   )}
                 </div>
                 {!collapsed && item.badge && (
-                  <Badge variant={item.badge.variant} size="sm">
+                  <Badge variant={item.badge.variant} size="sm" className="animate-bounce-gentle">
                     {item.badge.count}
                   </Badge>
                 )}
@@ -153,13 +162,13 @@ export function Sidebar({ onClose }: SidebarProps) {
         {/* Divider */}
         {!collapsed && (
           <div className="my-6">
-            <div className="h-px bg-gray-200 dark:bg-gray-800" />
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
           </div>
         )}
 
         {/* Secondary Navigation */}
         <div className="space-y-1">
-          {secondaryNavigation.map((item) => {
+          {secondaryNavigation.map((item, index) => {
             const isActive = pathname === item.href
             return (
               <Link
@@ -167,13 +176,14 @@ export function Sidebar({ onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300',
+                  'hover:translate-x-1',
                   isActive
                     ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                     : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300'
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                 {!collapsed && (
                   <span className="truncate">{item.name}</span>
                 )}

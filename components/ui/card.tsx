@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 const cardVariants = cva(
-  'rounded-xl border transition-all duration-200',
+  'rounded-xl border transition-all duration-300 transform-gpu',
   {
     variants: {
       variant: {
@@ -13,7 +13,9 @@ const cardVariants = cva(
         elevated: 'card-elevated',
         glass: 'glass-card',
         gradient: 'bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 border-primary-200 dark:border-primary-800',
-        outline: 'border-2 border-primary-200 dark:border-primary-800 bg-transparent hover:bg-primary-50/50 dark:hover:bg-primary-900/10'
+        outline: 'border-2 border-primary-200 dark:border-primary-800 bg-transparent hover:bg-primary-50/50 dark:hover:bg-primary-900/10',
+        enhanced: 'card-enhanced',
+        backdrop: 'backdrop-card',
       },
       size: {
         sm: 'p-4',
@@ -22,15 +24,23 @@ const cardVariants = cva(
       },
       hover: {
         none: '',
-        lift: 'hover:-translate-y-1 hover:shadow-lg',
+        lift: 'hover:-translate-y-2 hover:shadow-xl',
         glow: 'hover:shadow-glow hover:border-primary-300 dark:hover:border-primary-700',
-        scale: 'hover:scale-105',
+        scale: 'hover:scale-[1.02]',
+        all: 'hover:-translate-y-2 hover:shadow-xl hover:border-primary-300 dark:hover:border-primary-700',
+      },
+      animate: {
+        none: '',
+        fadeIn: 'animate-fade-in-up opacity-0',
+        scaleIn: 'animate-scale-in opacity-0',
+        slideUp: 'animate-slide-up opacity-0',
       }
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
       hover: 'lift',
+      animate: 'none',
     },
   }
 )
@@ -42,11 +52,11 @@ export interface CardProps
 }
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, size, hover, ...props }, ref) => {
+  ({ className, variant, size, hover, animate, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn(cardVariants({ variant, size, hover, className }))}
+        className={cn(cardVariants({ variant, size, hover, animate, className }))}
         {...props}
       />
     )

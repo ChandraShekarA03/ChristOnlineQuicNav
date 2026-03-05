@@ -221,52 +221,79 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-8 animate-fade-in">
-        <div className="flex items-center justify-between">
+      <div className="space-y-8">
+        <div className="flex items-center justify-between animate-fade-in">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              Dashboard
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              Welcome back! Here&apos;s what&apos;s happening today.
-            </p>
+            <div className="h-8 w-48 shimmer rounded-lg mb-2" />
+            <div className="h-5 w-80 shimmer rounded-lg" />
           </div>
-          <Loading size="lg" />
+          <Loading size="lg" variant="dots" />
         </div>
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="animate-pulse">
+            <Card 
+              key={i} 
+              className="overflow-hidden"
+              style={{ 
+                opacity: 0,
+                animation: `fadeInUp 0.5s ease-out ${i * 100}ms forwards`
+              }}
+            >
               <CardContent className="p-6">
-                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-                <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-                <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 space-y-3">
+                    <div className="h-4 w-24 shimmer rounded" />
+                    <div className="h-8 w-20 shimmer rounded" />
+                    <div className="h-3 w-28 shimmer rounded" />
+                  </div>
+                  <div className="h-12 w-12 shimmer rounded-xl" />
+                </div>
+                <div className="mt-4 h-12 w-full shimmer rounded" />
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <CardContent className="p-6">
+              <div className="h-6 w-40 shimmer rounded mb-4" />
+              <div className="h-[300px] shimmer rounded-xl" />
+            </CardContent>
+          </Card>
+          <Card className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <CardContent className="p-6">
+              <div className="h-6 w-40 shimmer rounded mb-4" />
+              <div className="h-[300px] shimmer rounded-xl" />
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold gradient-text font-heading">
             Dashboard
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-secondary mt-1">
             Welcome back! Here&apos;s what&apos;s happening in your faculty hub.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="success" className="gap-1">
-            <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+        <div className="flex items-center gap-3 animate-fade-in-right">
+          <Badge variant="success" className="gap-2 px-3 py-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
             System Online
           </Badge>
-          <Button variant="outline" leftIcon={<Calendar className="w-4 h-4" />}>
+          <Button variant="outline" leftIcon={<Calendar className="w-4 h-4" />} className="hover-lift">
             Last 7 days
           </Button>
         </div>
@@ -283,8 +310,7 @@ export default function Dashboard() {
             changeType={stat.changeType}
             icon={stat.icon}
             trend={stat.trend}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
+            animationDelay={index * 100}
           />
         ))}
       </div>
