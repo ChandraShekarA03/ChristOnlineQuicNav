@@ -73,10 +73,10 @@ const enhancedTokenUsage = [
 ]
 
 const modulePerformance = [
-  { name: 'Text Generation', usage: 85, tokens: 45000, color: '#6366f1' },
-  { name: 'Code Analysis', usage: 72, tokens: 32000, color: '#8b5cf6' },
-  { name: 'Data Processing', usage: 68, tokens: 28000, color: '#06b6d4' },
-  { name: 'Research Assistant', usage: 91, tokens: 52000, color: '#10b981' },
+  { name: 'Text Generation', usage: 85, tokens: 45000, color: '#7C83FF' },
+  { name: 'Code Analysis', usage: 72, tokens: 32000, color: '#6066e6' },
+  { name: 'Data Processing', usage: 68, tokens: 28000, color: '#4d52cc' },
+  { name: 'Research Assistant', usage: 91, tokens: 52000, color: '#22c55e' },
   { name: 'Language Translation', usage: 57, tokens: 18000, color: '#f59e0b' }
 ]
 
@@ -161,23 +161,23 @@ export default function AnalyticsPage() {
       <div className="space-y-8 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold text-text-primary font-heading">
               Analytics
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-text-secondary font-body">
               Detailed insights into your LMS usage and performance
             </p>
           </div>
           <Loading size="lg" />
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="animate-pulse">
+            <Card key={i} className="animate-pulse glass-gradient">
               <CardContent className="p-6">
-                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-                <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-                <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+                <div className="h-4 w-20 bg-primary-500/20 rounded mb-4" />
+                <div className="h-8 w-16 bg-primary-500/20 rounded mb-2" />
+                <div className="h-3 w-24 bg-primary-500/20 rounded" />
               </CardContent>
             </Card>
           ))}
@@ -187,32 +187,33 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in-up">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 animate-slide-up">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold font-heading gradient-text">
             Analytics Dashboard
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-text-secondary font-body mt-1">
             Comprehensive insights into LMS usage, performance, and trends
           </p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {timeRanges.map((range) => (
               <Button
                 key={range.value}
                 variant={selectedRange === range.value ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setSelectedRange(range.value)}
+                className={selectedRange === range.value ? 'btn-primary' : ''}
               >
                 {range.label}
               </Button>
             ))}
           </div>
-          
+
           <div className="flex gap-2">
             <Button variant="outline" size="sm" leftIcon={<Filter className="w-4 h-4" />}>
               Filter
@@ -242,15 +243,15 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         {/* Token Usage Trend */}
-        <Card className="col-span-1">
+        <Card className="glass-gradient">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary-600" />
+            <CardTitle className="flex items-center gap-2 font-heading">
+              <TrendingUp className="w-5 h-5 text-primary-500" />
               Token Usage Trend
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="font-body">
               Daily token consumption and session activity
             </CardDescription>
           </CardHeader>
@@ -259,37 +260,38 @@ export default function AnalyticsPage() {
               <AreaChart data={enhancedTokenUsage}>
                 <defs>
                   <linearGradient id="colorTokens" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#7C83FF" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#7C83FF" stopOpacity={0.1}/>
                   </linearGradient>
                   <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="date" className="text-xs" />
-                <YAxis className="text-xs" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--background))', 
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }} 
+                <XAxis dataKey="date" className="text-xs" stroke="currentColor" />
+                <YAxis className="text-xs" stroke="currentColor" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'var(--surface)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: '12px',
+                    backdropFilter: 'blur(10px)'
+                  }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="tokens" 
-                  stroke="#6366f1" 
-                  fillOpacity={1} 
+                <Area
+                  type="monotone"
+                  dataKey="tokens"
+                  stroke="#7C83FF"
+                  fillOpacity={1}
                   fill="url(#colorTokens)"
                   name="Tokens"
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="sessions" 
-                  stroke="#10b981" 
-                  fillOpacity={1} 
+                <Area
+                  type="monotone"
+                  dataKey="sessions"
+                  stroke="#22c55e"
+                  fillOpacity={1}
                   fill="url(#colorSessions)"
                   name="Sessions"
                 />
@@ -299,13 +301,13 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Module Performance */}
-        <Card className="col-span-1">
+        <Card className="glass-gradient">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-primary-600" />
+            <CardTitle className="flex items-center gap-2 font-heading">
+              <Brain className="w-5 h-5 text-primary-500" />
               Module Performance
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="font-body">
               Usage efficiency and token consumption by module
             </CardDescription>
           </CardHeader>
@@ -313,18 +315,19 @@ export default function AnalyticsPage() {
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={modulePerformance} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis type="number" className="text-xs" />
-                <YAxis dataKey="name" type="category" className="text-xs" width={120} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--background))', 
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }} 
+                <XAxis type="number" className="text-xs" stroke="currentColor" />
+                <YAxis dataKey="name" type="category" className="text-xs" width={120} stroke="currentColor" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'var(--surface)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: '12px',
+                    backdropFilter: 'blur(10px)'
+                  }}
                 />
-                <Bar 
-                  dataKey="usage" 
-                  fill="#6366f1"
+                <Bar
+                  dataKey="usage"
+                  fill="#7C83FF"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>

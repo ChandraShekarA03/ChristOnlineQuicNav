@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { ToastProvider } from '@/components/ui/toast'
+import { AuthProvider } from '@/lib/auth-context'
 
 export const metadata: Metadata = {
   title: 'Christ Faculty Hub - Electric Lavender Theme',
@@ -12,8 +14,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="font-body">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-body">
+        <AuthProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </AuthProvider>
+      </body>
     </html>
   )
 }

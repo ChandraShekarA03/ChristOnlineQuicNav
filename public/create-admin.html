@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Admin User - Christ Faculty Hub</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1F2140 0%, #2e3399 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #1F2140;
+      font-size: 28px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .step {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #7C83FF;
+    }
+
+    .step-number {
+      background: #7C83FF;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #1F2140;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .step-content {
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-left: 38px;
+    }
+
+    .step-content code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #7C83FF 0%, #6066e6 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      margin-top: 10px;
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      color: #1e40af;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+    }
+
+    .link {
+      color: #7C83FF;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .credentials {
+      background: #f8fafc;
+      border: 2px solid #7C83FF;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .credentials-row {
+      display: flex;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .credentials-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .credentials-label {
+      font-weight: 600;
+      color: #1F2140;
+      width: 80px;
+    }
+
+    .credentials-value {
+      color: #475569;
+      font-family: 'Courier New', monospace;
+    }
+
+    .checklist {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .checklist li {
+      padding: 8px 0;
+      padding-left: 28px;
+      position: relative;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .checklist li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🎯 Create Admin User</h1>
+      <p class="subtitle">Set up your super admin account in 2 steps</p>
+
+      <div class="alert alert-info">
+        <strong>⚡ Quick Setup:</strong> Follow these steps to create the admin account with email <code>admin@christuniversity.in</code>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">1</span>
+          Create User in Firebase Authentication
+        </div>
+        <div class="step-content">
+          <p>Click the button below to open Firebase Console:</p>
+          <a 
+            href="https://console.firebase.google.com/project/classroom-engagement-christ/authentication/users" 
+            target="_blank"
+            class="btn"
+          >
+            🔐 Open Firebase Authentication
+          </a>
+          <p style="margin-top: 16px;">Then:</p>
+          <ul class="checklist">
+            <li>Click "Add user"</li>
+            <li>Email: <code>admin@christuniversity.in</code></li>
+            <li>Password: <code>Admin@123</code></li>
+            <li>Click "Add user"</li>
+            <li><strong>Copy the User UID</strong> (click on the user to see it)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">2</span>
+          Create User Document in Firestore
+        </div>
+        <div class="step-content">
+          <p>Click the button below to open Firestore:</p>
+          <a 
+            href="https://console.firebase.google.com/project/classroom-engagement-christ/firestore" 
+            target="_blank"
+            class="btn"
+          >
+            📄 Open Firestore Database
+          </a>
+          <p style="margin-top: 16px;">Then:</p>
+          <ul class="checklist">
+            <li>Click "Start collection"</li>
+            <li>Collection ID: <code>users</code></li>
+            <li>Document ID: <strong>[Paste the User UID you copied]</strong></li>
+            <li>Add these 6 fields:</li>
+          </ul>
+
+          <div class="credentials">
+            <div class="credentials-row">
+              <span class="credentials-label">email:</span>
+              <span class="credentials-value">admin@christuniversity.in</span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">name:</span>
+              <span class="credentials-value">Admin User</span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">department:</span>
+              <span class="credentials-value">Administration</span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">role:</span>
+              <span class="credentials-value">SUPER_ADMIN</span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">createdAt:</span>
+              <span class="credentials-value" id="createdAt"></span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">updatedAt:</span>
+              <span class="credentials-value" id="updatedAt"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">3</span>
+          Test Login
+        </div>
+        <div class="step-content">
+          <p>After completing steps 1 and 2, test your admin account:</p>
+          
+          <div class="credentials">
+            <div class="credentials-row">
+              <span class="credentials-label">Email:</span>
+              <span class="credentials-value">admin@christuniversity.in</span>
+            </div>
+            <div class="credentials-row">
+              <span class="credentials-label">Password:</span>
+              <span class="credentials-value">Admin@123</span>
+            </div>
+          </div>
+
+          <a 
+            href="http://localhost:3000/auth/signin" 
+            target="_blank"
+            class="btn"
+          >
+            🚀 Go to Sign In Page
+          </a>
+        </div>
+      </div>
+
+      <div class="alert alert-success">
+        <strong>✅ Done!</strong> After completing these steps, you'll be able to:
+        <ul class="checklist" style="margin-top: 12px;">
+          <li>Access the admin dashboard</li>
+          <li>Create and manage users</li>
+          <li>Assign roles (FACULTY, ADMIN, SUPER_ADMIN)</li>
+          <li>Manage all links and LMS modules</li>
+        </ul>
+      </div>
+
+      <div class="alert alert-warning">
+        <strong>⚠️ Important:</strong> The Document ID in Firestore MUST exactly match the User UID from Authentication. Double-check this!
+      </div>
+
+      <button onclick="window.location.reload()" class="btn btn-secondary">
+        🔄 Refresh This Page
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Set current timestamps
+    const now = new Date().toISOString();
+    document.getElementById('createdAt').textContent = now;
+    document.getElementById('updatedAt').textContent = now;
+  </script>
+</body>
+</html>

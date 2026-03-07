@@ -1,16 +1,15 @@
 'use client'
 
-import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { useAuth } from '@/lib/auth-context'
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 import { Loading } from '@/components/ui/loading'
 
-export default function Layout({
-  children,
-}: {
+interface ProtectedRouteProps {
   children: React.ReactNode
-}) {
+}
+
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, loading } = useAuth()
   const router = useRouter()
 
@@ -23,10 +22,7 @@ export default function Layout({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background-secondary">
-        <div className="text-center space-y-4">
-          <Loading size="lg" />
-          <p className="text-text-secondary font-body animate-pulse">Loading dashboard...</p>
-        </div>
+        <Loading size="lg" />
       </div>
     )
   }
@@ -35,9 +31,5 @@ export default function Layout({
     return null
   }
 
-  return (
-    <DashboardLayout>
-      {children}
-    </DashboardLayout>
-  )
+  return <>{children}</>
 }

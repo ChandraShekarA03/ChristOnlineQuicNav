@@ -1,14 +1,20 @@
-import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export default withAuth(
-  function middleware(req) {
-    // Add custom middleware logic here
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Check for auth token in cookies
+  const token = request.cookies.get('token')?.value
+
+  // Redirect authenticated users away from auth pages
+  if (pathname.startsWith('/auth') && token) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
-)
 
-export const config = { matcher: ['/dashboard/:path*'] }
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/auth/:path*']
+}
