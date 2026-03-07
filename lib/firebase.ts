@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -18,5 +18,14 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
 // Initialize Firebase services
 export const auth = getAuth(app)
 export const db = getFirestore(app)
+
+// Set persistence to LOCAL (survives page refresh)
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.error('Error setting auth persistence:', error)
+  })
+}
+
+console.log('Firebase initialized successfully')
 
 export default app

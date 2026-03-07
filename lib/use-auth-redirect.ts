@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { signOut } from '@/lib/firebase-auth'
+import { logOut } from '@/lib/firebase-auth'
 
 export function useAuthRedirect() {
   const { isAuthenticated, loading } = useAuth()
@@ -22,7 +22,7 @@ export function useAuthRedirect() {
 
 export async function handleSignOut() {
   try {
-    await signOut()
+    await logOut()
   } catch (error) {
     console.error('Error signing out:', error)
   }

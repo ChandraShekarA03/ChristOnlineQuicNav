@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Sidebar } from './sidebar'
 import { DashboardHeader } from './dashboard-header'
+import { useAuth } from '@/lib/auth-context'
+import { Loading } from '@/components/ui/loading'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -12,82 +15,101 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const { loading } = useAuth()
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-    document.documentElement.classList.toggle('dark')
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background-secondary">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center space-y-4"
+        >
+          <div className="relative">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/30 animate-spin-slow">
+              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm" />
+            </div>
+            <div className="absolute inset-0 w-16 h-16 rounded-2xl border-2 border-violet-300 dark:border-violet-700 animate-ping" />
+          </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-text-secondary font-body animate-pulse"
+          >
+            Loading dashboard...
+          </motion.p>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
-    <div className={cn(
-      'min-h-screen transition-all duration-500',
-      theme === 'dark' ? 'dark' : ''
-    )}>
-      {/* Clean background */}
-      <div className="fixed inset-0 -z-10">
-        <div className={cn(
-          'absolute inset-0 transition-colors duration-500',
-          theme === 'dark' 
-            ? 'bg-[#0f1129]' 
-            : 'bg-gradient-to-b from-[#fafbff] to-[#f0f2ff]'
-        )} />
-        {/* Subtle grid */}
-        <div 
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04]"
-          style={{
-            backgroundImage: `linear-gradient(#7C83FF 1px, transparent 1px), linear-gradient(90deg, #7C83FF 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        />
-        {/* Corner accents */}
-        <div className={cn(
-          'absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl transition-opacity duration-500',
-          theme === 'dark' ? 'bg-primary-600/5' : 'bg-primary-400/10'
-        )} />
-        <div className={cn(
-          'absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl transition-opacity duration-500',
-          theme === 'dark' ? 'bg-primary-700/5' : 'bg-primary-300/10'
-        )} />
-      </div>
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden animate-fade-in" 
-          onClick={() => setSidebarOpen(false)}
-        />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={cn(
+        'min-h-screen flex transition-all duration-300',
+        theme === 'dark'
+          ? 'dark bg-gradient-to-br from-secondary to-secondary-dark'
+          : 'bg-gradient-to-br from-background to-background-secondary'
       )}
-      
+    >
+      {/* Mobile sidebar overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <div className={cn(
-        'fixed inset-y-0 left-0 z-50 w-64 transform transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:inset-0',
-        sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-      )}>
+      <motion.div
+        initial={false}
+        animate={{ x: sidebarOpen || true ? 0 : '-100%' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="fixed inset-y-0 left-0 z-50 w-64 lg:relative lg:translate-x-0"
+      >
         <Sidebar onClose={() => setSidebarOpen(false)} />
-      </div>
+      </motion.div>
 
       {/* Main content */}
-      <div className="lg:ml-64 min-h-screen">
-        <DashboardHeader 
+      <div className="flex-1 flex flex-col min-w-0">
+        <DashboardHeader
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           onThemeToggle={toggleTheme}
           currentTheme={theme}
         />
-        
-        <main className={cn(
-          'p-4 sm:p-6 lg:p-8 transition-opacity duration-500',
-          mounted ? 'opacity-100' : 'opacity-0'
-        )}>
-          <div className="mx-auto max-w-7xl animate-fade-in-up">
+
+        <main className="flex-1 px-6 py-4 sm:px-8 sm:py-5 lg:px-10 lg:py-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="max-w-7xl mx-auto"
+          >
             {children}
-          </div>
+          </motion.div>
         </main>
       </div>
-    </div>
+    </motion.div>
   )
 }

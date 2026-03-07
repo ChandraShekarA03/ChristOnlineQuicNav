@@ -1,540 +1,296 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card } from '@/components/ui/card'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
-import { useToast } from '@/components/ui/toast'
-import { Plus, Play, Settings, BarChart3, Brain, Sparkles, Loader2, Trash2, Edit, Copy, CheckCircle, AlertCircle } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Brain, 
+  Plus, 
+  Search, 
+  Settings, 
+  Play, 
+  Clock, 
+  Zap, 
+  Sparkles, 
+  Cpu, 
+  MessageSquare,
+  TrendingUp,
+  BookOpen,
+  Code,
+  Lightbulb,
+  ChevronRight
+} from 'lucide-react'
 
-interface LMSModule {
-  id: string
-  name: string
-  description: string
-  promptTemplate: string
-  model: string
-  createdAt: string
-  updatedAt: string
-}
-
-const AI_MODELS = [
-  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-  { value: 'gpt-4', label: 'GPT-4' },
-  { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-  { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet' },
-  { value: 'claude-3-haiku', label: 'Claude 3 Haiku' },
-  { value: 'claude-3-opus', label: 'Claude 3 Opus' },
-  { value: 'gemini-pro', label: 'Gemini Pro' },
+const modules = [
+  {
+    id: 1,
+    name: 'Course Content Generator',
+    description: 'AI-powered tool to generate comprehensive course materials and lecture notes',
+    model: 'GPT-4',
+    prompts: 156,
+    tokens: 45200,
+    status: 'active',
+    category: 'Content',
+    icon: BookOpen,
+    color: 'from-blue-500 to-cyan-500'
+  },
+  {
+    id: 2,
+    name: 'Quiz Builder',
+    description: 'Automatically create quizzes and assessments from course content',
+    model: 'GPT-3.5-Turbo',
+    prompts: 89,
+    tokens: 23400,
+    status: 'active',
+    category: 'Assessment',
+    icon: Code,
+    color: 'from-violet-500 to-purple-500'
+  },
+  {
+    id: 3,
+    name: 'Student Feedback Analyzer',
+    description: 'Analyze and summarize student feedback for continuous improvement',
+    model: 'GPT-4',
+    prompts: 234,
+    tokens: 67800,
+    status: 'active',
+    category: 'Analytics',
+    icon: TrendingUp,
+    color: 'from-orange-500 to-red-500'
+  },
+  {
+    id: 4,
+    name: 'Research Assistant',
+    description: 'Get help with research papers, citations, and literature reviews',
+    model: 'GPT-4-Turbo',
+    prompts: 67,
+    tokens: 89500,
+    status: 'beta',
+    category: 'Research',
+    icon: Lightbulb,
+    color: 'from-green-500 to-emerald-500'
+  },
+  {
+    id: 5,
+    name: 'Assignment Grader',
+    description: 'AI-assisted grading for assignments with detailed feedback',
+    model: 'GPT-4',
+    prompts: 312,
+    tokens: 125000,
+    status: 'active',
+    category: 'Assessment',
+    icon: Sparkles,
+    color: 'from-pink-500 to-rose-500'
+  },
+  {
+    id: 6,
+    name: 'Discussion Facilitator',
+    description: 'Generate discussion prompts and facilitate online conversations',
+    model: 'GPT-3.5-Turbo',
+    prompts: 145,
+    tokens: 34200,
+    status: 'active',
+    category: 'Engagement',
+    icon: MessageSquare,
+    color: 'from-indigo-500 to-blue-500'
+  },
 ]
 
-export default function LMSPage() {
-  const [modules, setModules] = useState<LMSModule[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [selectedModule, setSelectedModule] = useState<LMSModule | null>(null)
-  const [userInput, setUserInput] = useState('')
-  const [response, setResponse] = useState('')
-  const [executing, setExecuting] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [editingModule, setEditingModule] = useState<LMSModule | null>(null)
-  
-  const { success, error, info } = useToast()
+const categories = ['All', 'Content', 'Assessment', 'Analytics', 'Research', 'Engagement']
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    promptTemplate: '',
-    model: 'gpt-3.5-turbo'
+export default function LMSModulesPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+
+  const filteredModules = modules.filter(module => {
+    const matchesSearch = module.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         module.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === 'All' || module.category === selectedCategory
+    return matchesSearch && matchesCategory
   })
 
-  const fetchModules = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/lms')
-      if (response.ok) {
-        const data = await response.json()
-        setModules(data)
-      } else {
-        error('Failed to fetch modules')
-      }
-    } catch (err) {
-      error('An error occurred while fetching modules')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchModules()
-  }, [])
-
-  const handleOpenForm = (module?: LMSModule) => {
-    if (module) {
-      setEditingModule(module)
-      setFormData({
-        name: module.name,
-        description: module.description,
-        promptTemplate: module.promptTemplate,
-        model: module.model
-      })
-    } else {
-      setEditingModule(null)
-      setFormData({
-        name: '',
-        description: '',
-        promptTemplate: '',
-        model: 'gpt-3.5-turbo'
-      })
-    }
-    setShowForm(true)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
-      const url = editingModule ? `/api/lms/${editingModule.id}` : '/api/lms'
-      const method = editingModule ? 'PUT' : 'POST'
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        success(
-          editingModule ? 'Module updated successfully!' : 'Module created successfully!',
-          editingModule ? 'The LMS module has been updated' : 'The new LMS module has been added'
-        )
-        setShowForm(false)
-        fetchModules()
-        setFormData({ name: '', description: '', promptTemplate: '', model: 'gpt-3.5-turbo' })
-      } else {
-        const data = await response.json()
-        error(data.error || 'Failed to save module')
-      }
-    } catch (err) {
-      error('An error occurred while saving the module')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const executeModule = async () => {
-    if (!selectedModule || !userInput) return
-
-    setExecuting(true)
-    setResponse('')
-
-    try {
-      const res = await fetch('/api/lms/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          moduleId: selectedModule.id,
-          userInput
-        })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setResponse(data.response)
-        success('Module executed successfully!', 'Response generated')
-      } else {
-        setResponse('Error executing module')
-        error('Failed to execute module')
-      }
-    } catch (err) {
-      setResponse('Error executing module')
-      error('An error occurred while executing the module')
-    } finally {
-      setExecuting(false)
-    }
-  }
-
-  const handleDelete = async (module: LMSModule) => {
-    try {
-      const response = await fetch(`/api/lms/${module.id}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        success('Module deleted successfully!', 'The LMS module has been removed')
-        if (selectedModule?.id === module.id) {
-          setSelectedModule(null)
-          setResponse('')
-        }
-        fetchModules()
-      } else {
-        error('Failed to delete module')
-      }
-    } catch (err) {
-      error('An error occurred while deleting the module')
-    }
-  }
-
-  const copyPrompt = (prompt: string) => {
-    navigator.clipboard.writeText(prompt)
-    info('Prompt copied to clipboard')
-  }
+  const stats = [
+    { label: 'Total Modules', value: '6', icon: Brain, change: '+2 new', color: 'text-violet-600' },
+    { label: 'Total Prompts', value: '1,003', icon: MessageSquare, change: '+12% this week', color: 'text-blue-600' },
+    { label: 'Tokens Used', value: '385K', icon: Zap, change: '+28% this month', color: 'text-orange-600' },
+    { label: 'Active Sessions', value: '24', icon: Cpu, change: 'Currently active', color: 'text-green-600' },
+  ]
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-slide-up">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
         <div>
-          <h1 className="text-3xl font-bold font-heading gradient-text flex items-center gap-3">
-            <Brain className="w-8 h-8 text-primary-500" />
-            LMS Module Management
-          </h1>
-          <p className="text-text-secondary font-body mt-1">
-            Configure and test AI-powered learning modules
+          <h1 className="text-3xl font-bold gradient-text font-heading">LMS Modules</h1>
+          <p className="text-secondary font-body mt-1">
+            AI-powered learning management tools
           </p>
         </div>
-        <Button 
-          onClick={() => handleOpenForm()} 
-          className="btn-primary shadow-lg hover:shadow-xl hover:shadow-primary-500/25 transition-all"
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Add Module
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg shadow-violet-500/30">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Module
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-secondary mb-1">{stat.label}</p>
+                    <h3 className="text-2xl font-bold gradient-text">{stat.value}</h3>
+                    <p className="text-xs text-success mt-1">{stat.change}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-violet-100/50 dark:bg-violet-900/20">
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Modules List */}
-        <div className="space-y-4 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold font-heading text-text-primary">Available Modules</h2>
-            <Badge variant="primary" className="gap-1">
-              <Brain className="w-3 h-3" />
-              {modules.length}
-            </Badge>
-          </div>
-
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 animate-pulse glass-gradient">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="h-5 w-3/4 bg-primary-500/20 rounded mb-2" />
-                      <div className="h-4 w-full bg-primary-500/10 rounded mb-2" />
-                      <div className="h-4 w-1/3 bg-primary-500/10 rounded" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {modules.map((module, index) => (
-                <Card 
-                  key={module.id} 
-                  className={`group p-6 glass-gradient hover-lift cursor-pointer transition-all animate-fade-in-up ${
-                    selectedModule?.id === module.id ? 'ring-2 ring-primary-500' : ''
-                  }`}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => setSelectedModule(module)}
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Brain className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                        <h3 className="text-lg font-semibold text-text-primary font-heading truncate group-hover:text-primary-500 transition-colors">
-                          {module.name}
-                        </h3>
-                      </div>
-                      <p className="text-text-secondary text-sm font-body line-clamp-2 mb-3">
-                        {module.description}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-1 bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-full text-xs font-medium font-body">
-                          {module.model}
-                        </span>
-                        <span className="text-xs text-text-muted font-body">
-                          {new Date(module.createdAt).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setSelectedModule(module)}
-                        className="hover:bg-primary-500/10 hover:text-primary-500"
-                        title="Test module"
-                      >
-                        <Play className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleOpenForm(module)}
-                        className="hover:bg-primary-500/10 hover:text-primary-500"
-                        title="Edit module"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copyPrompt(module.promptTemplate)}
-                        className="hover:bg-primary-500/10 hover:text-primary-500"
-                        title="Copy prompt"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDelete(module)}
-                        className="hover:bg-danger-500/10 hover:text-danger-500"
-                        title="Delete module"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {!loading && modules.length === 0 && (
-            <Card className="p-12 text-center glass-gradient animate-scale-in">
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Brain className="w-8 h-8 text-primary-500" />
-                </div>
-                <h3 className="text-xl font-semibold font-heading text-text-primary mb-2">
-                  No modules yet
-                </h3>
-                <p className="text-text-secondary font-body mb-6">
-                  Get started by creating your first AI-powered LMS module
-                </p>
-                <Button onClick={() => handleOpenForm()} className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Your First Module
-                </Button>
-              </div>
-            </Card>
-          )}
+      {/* Filters */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="flex flex-col sm:flex-row gap-4"
+      >
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            placeholder="Search modules..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border-2 border-violet-100 dark:border-violet-800 rounded-xl text-sm focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-body"
+          />
         </div>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                selectedCategory === category
+                  ? 'bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/30'
+                  : 'bg-white/50 dark:bg-slate-800/50 text-secondary hover:bg-violet-100/50 dark:hover:bg-violet-900/20 border border-violet-200/20 dark:border-violet-800/20'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </motion.div>
 
-        {/* Module Execution */}
-        <div className="space-y-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          <h2 className="text-xl font-semibold font-heading text-text-primary flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary-500" />
-            Test Module
-          </h2>
-          {selectedModule ? (
-            <Card className="p-6 glass-gradient">
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Brain className="w-5 h-5 text-primary-500" />
-                  <h3 className="text-lg font-semibold font-heading text-text-primary">
-                    Testing: {selectedModule.name}
-                  </h3>
+      {/* Modules Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredModules.map((module, index) => (
+          <motion.div
+            key={module.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+            whileHover={{ y: -4 }}
+          >
+            <Card className="group h-full border-violet-200/20 dark:border-violet-800/20 hover:border-violet-400 dark:hover:border-violet-600 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 overflow-hidden">
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${module.color} shadow-lg`}>
+                    <module.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <Badge
+                    variant={module.status === 'active' ? 'success' : 'warning'}
+                    className="text-xs"
+                  >
+                    {module.status}
+                  </Badge>
                 </div>
-                <p className="text-text-secondary text-sm font-body">
-                  {selectedModule.description}
-                </p>
-              </div>
+                <CardTitle className="text-lg font-bold font-heading text-primary group-hover:text-violet-600 transition-colors">
+                  {module.name}
+                </CardTitle>
+                <CardDescription className="text-sm font-body line-clamp-2">
+                  {module.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between text-xs text-secondary">
+                  <div className="flex items-center gap-1">
+                    <Cpu className="w-3.5 h-3.5" />
+                    <span>{module.model}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>{module.prompts}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>{(module.tokens / 1000).toFixed(1)}K</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2 border-t border-violet-100 dark:border-violet-800">
+                  <Button size="sm" className="flex-1 bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-md">
+                    <Play className="w-3.5 h-3.5 mr-1.5" />
+                    Launch
+                  </Button>
+                  <Button size="sm" variant="outline" className="border-violet-200 dark:border-violet-800 hover:bg-violet-100/50 dark:hover:bg-violet-900/20">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
 
-              <div className="space-y-4">
+      {/* Quick Actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Card className="border-violet-200/20 dark:border-violet-800/20 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20">
+          <CardContent className="p-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-xl shadow-violet-500/30">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
                 <div>
-                  <label className="block text-sm font-medium text-text-primary font-body mb-2">
-                    Input
-                  </label>
-                  <textarea
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-border-medium bg-surface text-text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body resize-none"
-                    rows={4}
-                    placeholder="Enter your input here..."
-                  />
+                  <h3 className="text-xl font-bold font-heading text-primary">Need a Custom Module?</h3>
+                  <p className="text-secondary font-body mt-1">
+                    Create a custom AI module tailored to your specific needs
+                  </p>
                 </div>
-
-                <Button
-                  onClick={executeModule}
-                  disabled={executing || !userInput}
-                  className="w-full btn-primary"
-                  size="lg"
-                >
-                  {executing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Executing Module...
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Execute Module
-                    </>
-                  )}
+              </div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" variant="outline" className="border-violet-300 dark:border-violet-700 hover:bg-violet-100/50 dark:hover:bg-violet-900/20">
+                  Create Custom Module
+                  <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
-
-                {response && (
-                  <div className="animate-fade-in-up">
-                    <label className="block text-sm font-medium text-text-primary font-body mb-2 flex items-center justify-between">
-                      <span>Response</span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copyPrompt(response)}
-                        className="h-7 text-xs"
-                        leftIcon={<Copy className="w-3 h-3" />}
-                      >
-                        Copy
-                      </Button>
-                    </label>
-                    <div className="p-4 rounded-xl border border-border-medium bg-surface text-text-primary min-h-[150px] max-h-[400px] overflow-y-auto font-body whitespace-pre-wrap">
-                      {response}
-                    </div>
-                  </div>
-                )}
-
-                {executing && (
-                  <div className="flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-2" />
-                      <p className="text-text-secondary font-body">Generating response...</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card>
-          ) : (
-            <Card className="p-12 text-center glass-gradient animate-scale-in">
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Play className="w-8 h-8 text-primary-500" />
-                </div>
-                <h3 className="text-xl font-semibold font-heading text-text-primary mb-2">
-                  Select a module to test
-                </h3>
-                <p className="text-text-secondary font-body">
-                  Choose an LMS module from the list to test it with custom input
-                </p>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
-
-      {/* Add/Edit Module Dialog */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-2xl animate-scale-in">
-          <DialogHeader>
-            <DialogTitle className="font-heading flex items-center gap-2">
-              <Brain className="w-5 h-5 text-primary-500" />
-              {editingModule ? 'Edit LMS Module' : 'Create New LMS Module'}
-            </DialogTitle>
-            <DialogDescription className="font-body">
-              {editingModule ? 'Update the module details below' : 'Configure a new AI-powered learning module'}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Module Name"
-                placeholder="e.g., Content Generator"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-              
-              <Select
-                label="AI Model"
-                value={formData.model}
-                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                options={AI_MODELS}
-              />
+              </motion.div>
             </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-primary font-body">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-border-medium bg-surface text-text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body resize-none"
-                rows={2}
-                placeholder="Brief description of what this module does..."
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-primary font-body">
-                Prompt Template
-              </label>
-              <textarea
-                value={formData.promptTemplate}
-                onChange={(e) => setFormData({ ...formData, promptTemplate: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-border-medium bg-surface text-text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body resize-none font-mono text-sm"
-                rows={6}
-                placeholder="Enter the prompt template. Use {input} as placeholder for user input."
-                required
-              />
-              <p className="text-xs text-text-muted font-body">
-                Use <code className="px-1.5 py-0.5 bg-primary-500/10 rounded">{`{input}`}</code> as a placeholder for dynamic user input
-              </p>
-            </div>
-            
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowForm(false)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {editingModule ? 'Updating...' : 'Creating...'}
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {editingModule ? 'Update Module' : 'Create Module'}
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
-  )
-}
-
-// Simple Badge component for this page
-function Badge({ variant, className, children }: { variant?: 'primary' | 'success' | 'warning' | 'danger'; className?: string; children: React.ReactNode }) {
-  const variants = {
-    primary: 'bg-primary-500/10 text-primary-600 dark:text-primary-400',
-    success: 'bg-success-500/10 text-success-600 dark:text-success-400',
-    warning: 'bg-warning-500/10 text-warning-600 dark:text-warning-400',
-    danger: 'bg-danger-500/10 text-danger-600 dark:text-danger-400',
-  }
-
-  return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-medium font-body ${variants[variant || 'primary']} ${className || ''}`}>
-      {children}
-    </span>
   )
 }

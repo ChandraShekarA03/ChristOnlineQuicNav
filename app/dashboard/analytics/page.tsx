@@ -1,492 +1,313 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MetricCard } from '@/components/ui/metric-card'
-import { Loading } from '@/components/ui/loading'
 import { 
   BarChart3, 
   TrendingUp, 
   Users, 
-  Link, 
-  Brain, 
   Activity, 
-  Download,
-  Filter,
-  Calendar,
+  Zap, 
+  Clock,
   ArrowUpRight,
   ArrowDownRight,
-  Eye,
-  Clock,
-  Zap
+  Download,
+  Calendar
 } from 'lucide-react'
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell,
+import { Button } from '@/components/ui/button'
+import {
   AreaChart,
-  Area
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
 } from 'recharts'
 
-interface AnalyticsData {
-  overview: {
-    totalLinks: number
-    totalUsers: number
-    totalLMSLogs: number
-    totalTokens: number
-  }
-  recentActivity: {
-    links: number
-    logs: number
-  }
-  topModules: Array<{
-    name: string
-    usage: number
-    tokens: number
-  }>
-  tokenUsageByDay: Array<{
-    date: string
-    tokens: number
-  }>
-}
-
-// Enhanced mock data
-const enhancedTokenUsage = [
-  { date: 'Mon', tokens: 2400, sessions: 24, users: 12 },
-  { date: 'Tue', tokens: 1398, sessions: 20, users: 15 },
-  { date: 'Wed', tokens: 9800, sessions: 45, users: 28 },
-  { date: 'Thu', tokens: 3908, sessions: 32, users: 22 },
-  { date: 'Fri', tokens: 4800, sessions: 38, users: 31 },
-  { date: 'Sat', tokens: 3800, sessions: 25, users: 18 },
-  { date: 'Sun', tokens: 4300, sessions: 29, users: 20 }
+const usageData = [
+  { name: 'Mon', prompts: 120, tokens: 24000, users: 45 },
+  { name: 'Tue', prompts: 132, tokens: 28000, users: 52 },
+  { name: 'Wed', prompts: 101, tokens: 21000, users: 38 },
+  { name: 'Thu', prompts: 134, tokens: 29000, users: 56 },
+  { name: 'Fri', prompts: 90, tokens: 18000, users: 32 },
+  { name: 'Sat', prompts: 230, tokens: 48000, users: 78 },
+  { name: 'Sun', prompts: 210, tokens: 42000, users: 65 },
 ]
 
-const modulePerformance = [
-  { name: 'Text Generation', usage: 85, tokens: 45000, color: '#7C83FF' },
-  { name: 'Code Analysis', usage: 72, tokens: 32000, color: '#6066e6' },
-  { name: 'Data Processing', usage: 68, tokens: 28000, color: '#4d52cc' },
-  { name: 'Research Assistant', usage: 91, tokens: 52000, color: '#22c55e' },
-  { name: 'Language Translation', usage: 57, tokens: 18000, color: '#f59e0b' }
+const moduleUsage = [
+  { name: 'Content Generator', value: 35, color: '#6366f1' },
+  { name: 'Quiz Builder', value: 25, color: '#8b5cf6' },
+  { name: 'Feedback Analyzer', value: 20, color: '#f97316' },
+  { name: 'Assignment Grader', value: 15, color: '#10b981' },
+  { name: 'Other', value: 5, color: '#64748b' },
 ]
 
-const timeRanges = [
-  { label: 'Last 7 days', value: '7d', active: true },
-  { label: 'Last 30 days', value: '30d', active: false },
-  { label: 'Last 90 days', value: '90d', active: false },
-  { label: 'Custom', value: 'custom', active: false }
+const departmentData = [
+  { name: 'Computer Science', prompts: 450, tokens: 95000 },
+  { name: 'Mathematics', prompts: 380, tokens: 78000 },
+  { name: 'Physics', prompts: 320, tokens: 67000 },
+  { name: 'Chemistry', prompts: 280, tokens: 58000 },
+  { name: 'Biology', prompts: 250, tokens: 52000 },
+  { name: 'English', prompts: 220, tokens: 45000 },
 ]
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedRange, setSelectedRange] = useState('7d')
-
-  useEffect(() => {
-    fetchAnalytics()
-  }, [])
-
-  const fetchAnalytics = async () => {
-    try {
-      // Simulate API call with mock data
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setData({
-        overview: {
-          totalLinks: 156,
-          totalUsers: 847,
-          totalLMSLogs: 2431,
-          totalTokens: 187650
-        },
-        recentActivity: {
-          links: 23,
-          logs: 156
-        },
-        topModules: modulePerformance,
-        tokenUsageByDay: enhancedTokenUsage
-      })
-    } catch (error) {
-      console.error('Error fetching analytics:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const metrics = [
     {
-      title: 'Total Sessions',
-      value: data?.overview.totalLMSLogs || 0,
-      change: '+18.2% from last week',
-      changeType: 'positive' as const,
+      title: 'Total Prompts',
+      value: '1,003',
+      change: '+12.5%',
+      changeType: 'positive',
       icon: Activity,
-      trend: [45, 52, 38, 65, 59, 80, 81]
+      color: 'from-violet-500 to-purple-500'
     },
     {
-      title: 'Token Consumption',
-      value: `${((data?.overview.totalTokens || 0) / 1000).toFixed(1)}K`,
-      change: '+7.4% efficiency gain',
-      changeType: 'positive' as const,
+      title: 'Tokens Used',
+      value: '385.2K',
+      change: '+28.3%',
+      changeType: 'positive',
       icon: Zap,
-      trend: [28, 48, 40, 19, 86, 27, 90]
+      color: 'from-orange-500 to-red-500'
     },
     {
-      title: 'Active Modules',
-      value: 5,
-      change: '2 new this month',
-      changeType: 'positive' as const,
-      icon: Brain,
-      trend: [20, 30, 40, 35, 50, 49, 60]
+      title: 'Active Users',
+      value: '234',
+      change: '+5.2%',
+      changeType: 'positive',
+      icon: Users,
+      color: 'from-blue-500 to-cyan-500'
     },
     {
-      title: 'Avg Response Time',
+      title: 'Avg. Response Time',
       value: '1.2s',
-      change: '-0.3s improvement',
-      changeType: 'positive' as const,
+      change: '-0.3s',
+      changeType: 'positive',
       icon: Clock,
-      trend: [80, 75, 70, 65, 60, 58, 55]
-    }
+      color: 'from-green-500 to-emerald-500'
+    },
   ]
 
-  if (loading) {
-    return (
-      <div className="space-y-8 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary font-heading">
-              Analytics
-            </h1>
-            <p className="text-text-secondary font-body">
-              Detailed insights into your LMS usage and performance
-            </p>
-          </div>
-          <Loading size="lg" />
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="animate-pulse glass-gradient">
-              <CardContent className="p-6">
-                <div className="h-4 w-20 bg-primary-500/20 rounded mb-4" />
-                <div className="h-8 w-16 bg-primary-500/20 rounded mb-2" />
-                <div className="h-3 w-24 bg-primary-500/20 rounded" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 animate-slide-up">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
         <div>
-          <h1 className="text-3xl font-bold font-heading gradient-text">
-            Analytics Dashboard
-          </h1>
-          <p className="text-text-secondary font-body mt-1">
-            Comprehensive insights into LMS usage, performance, and trends
+          <h1 className="text-3xl font-bold gradient-text font-heading">Analytics</h1>
+          <p className="text-secondary font-body mt-1">
+            Comprehensive insights and usage statistics
           </p>
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-2 flex-wrap">
-            {timeRanges.map((range) => (
-              <Button
-                key={range.value}
-                variant={selectedRange === range.value ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedRange(range.value)}
-                className={selectedRange === range.value ? 'btn-primary' : ''}
-              >
-                {range.label}
-              </Button>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" leftIcon={<Filter className="w-4 h-4" />}>
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" leftIcon={<Download className="w-4 h-4" />}>
-              Export
-            </Button>
-          </div>
+        <div className="flex gap-2">
+          <Button variant="outline" className="border-violet-200 dark:border-violet-800 hover:bg-violet-100/50 dark:hover:bg-violet-900/20">
+            <Calendar className="w-4 h-4 mr-2" />
+            Last 7 days
+          </Button>
+          <Button className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg shadow-violet-500/30">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Key Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {/* Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, index) => (
-          <MetricCard
+          <motion.div
             key={metric.title}
-            title={metric.title}
-            value={metric.value}
-            change={metric.change}
-            changeType={metric.changeType}
-            icon={metric.icon}
-            trend={metric.trend}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
-          />
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-secondary mb-1">{metric.title}</p>
+                    <h3 className="text-2xl font-bold gradient-text">{metric.value}</h3>
+                    <div className="flex items-center gap-1 mt-2">
+                      {metric.changeType === 'positive' ? (
+                        <ArrowUpRight className="w-4 h-4 text-success" />
+                      ) : (
+                        <ArrowDownRight className="w-4 h-4 text-danger" />
+                      )}
+                      <span className={`text-xs font-medium ${metric.changeType === 'positive' ? 'text-success' : 'text-danger'}`}>
+                        {metric.change}
+                      </span>
+                      <span className="text-xs text-secondary">vs last week</span>
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${metric.color} shadow-lg`}>
+                    <metric.icon className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid gap-6 lg:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-        {/* Token Usage Trend */}
-        <Card className="glass-gradient">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-heading">
-              <TrendingUp className="w-5 h-5 text-primary-500" />
-              Token Usage Trend
-            </CardTitle>
-            <CardDescription className="font-body">
-              Daily token consumption and session activity
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={enhancedTokenUsage}>
-                <defs>
-                  <linearGradient id="colorTokens" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7C83FF" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#7C83FF" stopOpacity={0.1}/>
-                  </linearGradient>
-                  <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="date" className="text-xs" stroke="currentColor" />
-                <YAxis className="text-xs" stroke="currentColor" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--surface)',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: '12px',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tokens"
-                  stroke="#7C83FF"
-                  fillOpacity={1}
-                  fill="url(#colorTokens)"
-                  name="Tokens"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="sessions"
-                  stroke="#22c55e"
-                  fillOpacity={1}
-                  fill="url(#colorSessions)"
-                  name="Sessions"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Usage Trend */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="border-violet-200/20 dark:border-violet-800/20 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-violet-600" />
+                Usage Trend
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Daily prompts and token consumption
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={usageData}>
+                  <defs>
+                    <linearGradient id="colorPrompts" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" stroke="#6366f1" />
+                  <XAxis dataKey="name" className="text-xs" stroke="#94a3b8" />
+                  <YAxis className="text-xs" stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid #e0e7ff',
+                      borderRadius: '12px',
+                    }}
+                  />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="prompts"
+                    stroke="#6366f1"
+                    fillOpacity={1}
+                    fill="url(#colorPrompts)"
+                    name="Prompts"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="tokens"
+                    stroke="#f97316"
+                    fillOpacity={1}
+                    fill="url(#colorTokens)"
+                    name="Tokens"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* Module Performance */}
-        <Card className="glass-gradient">
+        {/* Module Distribution */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <Card className="border-violet-200/20 dark:border-violet-800/20 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-violet-600" />
+                Module Distribution
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Usage by module type
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={moduleUsage}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {moduleUsage.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid #e0e7ff',
+                      borderRadius: '12px',
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Department Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Card className="border-violet-200/20 dark:border-violet-800/20 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-heading">
-              <Brain className="w-5 h-5 text-primary-500" />
-              Module Performance
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-violet-600" />
+              Department Statistics
             </CardTitle>
-            <CardDescription className="font-body">
-              Usage efficiency and token consumption by module
+            <CardDescription className="mt-1">
+              Usage breakdown by department
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={modulePerformance} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis type="number" className="text-xs" stroke="currentColor" />
-                <YAxis dataKey="name" type="category" className="text-xs" width={120} stroke="currentColor" />
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={departmentData}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" stroke="#6366f1" />
+                <XAxis dataKey="name" className="text-xs" stroke="#94a3b8" angle={-45} textAnchor="end" height={80} />
+                <YAxis className="text-xs" stroke="#94a3b8" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'var(--surface)',
-                    border: '1px solid var(--border-light)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid #e0e7ff',
                     borderRadius: '12px',
-                    backdropFilter: 'blur(10px)'
                   }}
                 />
-                <Bar
-                  dataKey="usage"
-                  fill="#7C83FF"
-                  radius={[0, 4, 4, 0]}
-                />
+                <Legend />
+                <Bar dataKey="prompts" fill="#6366f1" radius={[6, 6, 0, 0]} name="Prompts" />
+                <Bar dataKey="tokens" fill="#8b5cf6" radius={[6, 6, 0, 0]} name="Tokens (K)" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Detailed Analysis */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Top Performing Modules */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-primary-600" />
-              Top Modules
-            </CardTitle>
-            <CardDescription>
-              Best performing modules by efficiency
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {modulePerformance
-              .sort((a, b) => b.usage - a.usage)
-              .slice(0, 5)
-              .map((module, index) => (
-              <div key={module.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: module.color }}
-                  />
-                  <div>
-                    <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
-                      {module.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {module.tokens.toLocaleString()} tokens
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {module.usage}%
-                  </p>
-                  <Badge 
-                    variant={module.usage > 80 ? 'success' : module.usage > 60 ? 'warning' : 'secondary'}
-                    size="sm"
-                  >
-                    {module.usage > 80 ? 'Excellent' : module.usage > 60 ? 'Good' : 'Fair'}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Usage Statistics */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary-600" />
-              Usage Statistics
-            </CardTitle>
-            <CardDescription>
-              Key performance indicators
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Peak Usage Hours</span>
-                  <span className="font-medium">10:00 - 16:00</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div className="bg-primary-600 h-2 rounded-full" style={{ width: '78%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Error Rate</span>
-                  <span className="font-medium text-green-600">2.1%</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '97.9%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Cache Hit Ratio</span>
-                  <span className="font-medium text-blue-600">87.3%</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '87.3%' }}></div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Insights */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary-600" />
-              Recent Insights
-            </CardTitle>
-            <CardDescription>
-              AI-powered analytics insights
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-              <div className="flex items-start gap-3">
-                <ArrowUpRight className="w-4 h-4 text-blue-600 mt-1" />
-                <div>
-                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    Peak Performance
-                  </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300">
-                    Research Assistant module shows 23% increase in usage efficiency
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-              <div className="flex items-start gap-3">
-                <TrendingUp className="w-4 h-4 text-green-600 mt-1" />
-                <div>
-                  <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                    Cost Optimization
-                  </p>
-                  <p className="text-xs text-green-700 dark:text-green-300">
-                    Token usage optimized, saving ~15% in operational costs
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-              <div className="flex items-start gap-3">
-                <Clock className="w-4 h-4 text-yellow-600 mt-1" />
-                <div>
-                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                    Response Time
-                  </p>
-                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                    Average response time improved by 300ms this week
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </motion.div>
     </div>
   )
 }

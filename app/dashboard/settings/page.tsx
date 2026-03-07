@@ -1,244 +1,305 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/components/ui/card'
+import { motion } from 'framer-motion'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Settings, Database, Shield, Mail, Key } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Settings as SettingsIcon, 
+  User, 
+  Bell, 
+  Shield, 
+  Palette, 
+  Globe, 
+  Save,
+  Moon,
+  Sun,
+  Monitor,
+  Check,
+  Loader2
+} from 'lucide-react'
+import toast from 'react-hot-toast'
+
+const notifications = [
+  { id: 1, label: 'Email notifications', description: 'Receive email updates about your account', enabled: true },
+  { id: 2, label: 'Push notifications', description: 'Get push notifications in your browser', enabled: false },
+  { id: 3, label: 'Weekly digest', description: 'Receive a weekly summary of activities', enabled: true },
+  { id: 4, label: 'Security alerts', description: 'Get notified about security-related events', enabled: true },
+]
+
+const privacyOptions = [
+  { id: 'public', label: 'Public', description: 'Anyone can see your profile' },
+  { id: 'faculty', label: 'Faculty Only', description: 'Only faculty members can see your profile' },
+  { id: 'private', label: 'Private', description: 'Only you can see your profile' },
+]
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('general')
+  const [saving, setSaving] = useState(false)
+  const [theme, setTheme] = useState('system')
+  const [language, setLanguage] = useState('en')
+  const [selectedPrivacy, setSelectedPrivacy] = useState('faculty')
 
-  const tabs = [
-    { id: 'general', label: 'General', icon: Settings },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'database', label: 'Database', icon: Database },
-    { id: 'notifications', label: 'Notifications', icon: Mail }
+  const handleSave = async () => {
+    setSaving(true)
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    toast.success('Settings saved successfully!')
+    setSaving(false)
+  }
+
+  const sections = [
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'privacy', label: 'Privacy & Security', icon: Shield },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
+    { id: 'language', label: 'Language & Region', icon: Globe },
   ]
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-christ-blue-dark">System Settings</h1>
-        <p className="text-christ-blue text-lg mt-1">Configure system preferences and settings</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div>
+          <h1 className="text-3xl font-bold gradient-text font-heading">Settings</h1>
+          <p className="text-secondary font-body mt-1">
+            Manage your account preferences and settings
+          </p>
+        </div>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button 
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg shadow-violet-500/30"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </motion.div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
-        <Card className="card-professional p-6">
-          <nav className="space-y-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-christ-blue text-white'
-                    : 'text-christ-blue-dark hover:bg-christ-ivory/20'
-                }`}
-              >
-                <tab.icon className="w-5 h-5" />
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="lg:col-span-1"
+        >
+          <Card className="border-violet-200/20 dark:border-violet-800/20 sticky top-24">
+            <CardContent className="p-4 space-y-1">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-violet-100/50 dark:hover:bg-violet-900/20 text-secondary hover:text-primary"
+                >
+                  <section.icon className="w-5 h-5" />
+                  {section.label}
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* Content */}
-        <Card className="card-professional p-8 lg:col-span-3">
-          {activeTab === 'general' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Settings className="w-6 h-6 text-christ-gold" />
-                <h2 className="text-2xl font-semibold text-christ-blue-dark">General Settings</h2>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-christ-blue-dark mb-2">
-                    System Name
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue="Christ Faculty Hub"
-                    className="w-full px-4 py-3 bg-white border border-christ-ivory/50 rounded-lg text-christ-blue-dark focus:outline-none focus:ring-2 focus:ring-christ-gold"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-christ-blue-dark mb-2">
-                    Default Language
-                  </label>
-                  <select className="w-full px-4 py-3 bg-white border border-christ-ivory/50 rounded-lg text-christ-blue-dark focus:outline-none focus:ring-2 focus:ring-christ-gold">
-                    <option value="en">English</option>
-                    <option value="hi">Hindi</option>
-                    <option value="kn">Kannada</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-christ-blue-dark mb-2">
-                    Time Zone
-                  </label>
-                  <select className="w-full px-4 py-3 bg-white border border-christ-ivory/50 rounded-lg text-christ-blue-dark focus:outline-none focus:ring-2 focus:ring-christ-gold">
-                    <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                    <option value="UTC">UTC</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-4 pt-6">
-                <Button className="btn-primary">
-                  Save Changes
-                </Button>
-                <Button variant="outline" className="border-christ-blue/30 text-christ-blue hover:bg-christ-blue/10">
-                  Reset to Defaults
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Shield className="w-6 h-6 text-christ-gold" />
-                <h2 className="text-2xl font-semibold text-christ-blue-dark">Security Settings</h2>
-              </div>
-
-              <div className="space-y-6">
-                <div className="p-4 bg-christ-ivory/20 rounded-lg">
-                  <h3 className="font-semibold text-christ-blue-dark mb-2">Password Policy</h3>
-                  <p className="text-sm text-christ-blue-dark/70 mb-4">
-                    Configure password requirements for user accounts.
-                  </p>
-                  <div className="space-y-3">
-                    <label className="flex items-center">
-                      <input type="checkbox" defaultChecked className="mr-3" />
-                      <span className="text-sm text-christ-blue-dark">Minimum 8 characters</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" defaultChecked className="mr-3" />
-                      <span className="text-sm text-christ-blue-dark">Require uppercase letters</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" defaultChecked className="mr-3" />
-                      <span className="text-sm text-christ-blue-dark">Require numbers</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-christ-ivory/20 rounded-lg">
-                  <h3 className="font-semibold text-christ-blue-dark mb-2">Session Management</h3>
-                  <p className="text-sm text-christ-blue-dark/70 mb-4">
-                    Configure session timeout and security settings.
-                  </p>
+        {/* Main Content */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Profile Settings */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-heading">
+                  <User className="w-5 h-5 text-violet-600" />
+                  Profile Information
+                </CardTitle>
+                <CardDescription>
+                  Update your personal information and profile details
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-christ-blue-dark mb-2">
-                      Session Timeout (minutes)
-                    </label>
+                    <label className="block text-sm font-medium text-primary mb-2 font-body">Full Name</label>
                     <input
-                      type="number"
-                      defaultValue="60"
-                      className="w-full px-4 py-2 bg-white border border-christ-ivory/50 rounded-lg text-christ-blue-dark focus:outline-none focus:ring-2 focus:ring-christ-gold"
+                      type="text"
+                      defaultValue="Dr. Sarah Johnson"
+                      className="w-full px-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border-2 border-violet-100 dark:border-violet-800 rounded-xl text-sm focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-body"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-primary mb-2 font-body">Email</label>
+                    <input
+                      type="email"
+                      defaultValue="sarah.johnson@christuniversity.in"
+                      className="w-full px-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border-2 border-violet-100 dark:border-violet-800 rounded-xl text-sm focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-body"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-primary mb-2 font-body">Department</label>
+                    <select className="w-full px-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border-2 border-violet-100 dark:border-violet-800 rounded-xl text-sm focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-body">
+                      <option>Computer Science</option>
+                      <option>Mathematics</option>
+                      <option>Physics</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-primary mb-2 font-body">Phone</label>
+                    <input
+                      type="tel"
+                      defaultValue="+91 9876543210"
+                      className="w-full px-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border-2 border-violet-100 dark:border-violet-800 rounded-xl text-sm focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-body"
                     />
                   </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-              <div className="flex gap-4 pt-6">
-                <Button className="btn-primary">
-                  Save Security Settings
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'database' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Database className="w-6 h-6 text-christ-gold" />
-                <h2 className="text-2xl font-semibold text-christ-blue-dark">Database Settings</h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-4 bg-green-50/10 border border-green-200/30 rounded-lg">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="font-semibold text-christ-blue-dark">Database Status</span>
-                  </div>
-                  <p className="text-sm text-christ-blue-dark/70">Connected - SQLite</p>
-                </div>
-
-                <div className="p-4 bg-christ-ivory/20 rounded-lg">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Key className="w-5 h-5 text-christ-blue" />
-                    <span className="font-semibold text-christ-blue-dark">Last Backup</span>
-                  </div>
-                  <p className="text-sm text-christ-blue-dark/70">Never</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-christ-blue-dark">Database Actions</h3>
-                <div className="flex gap-4">
-                  <Button variant="outline" className="border-christ-blue/30 text-christ-blue hover:bg-christ-blue/10">
-                    <Database className="w-4 h-4 mr-2" />
-                    Backup Database
-                  </Button>
-                  <Button variant="outline" className="border-green-300/30 text-green-600 hover:bg-green-50/10">
-                    Optimize Database
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Mail className="w-6 h-6 text-christ-gold" />
-                <h2 className="text-2xl font-semibold text-christ-blue-dark">Notification Settings</h2>
-              </div>
-
-              <div className="space-y-6">
+          {/* Appearance Settings */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-heading">
+                  <Palette className="w-5 h-5 text-violet-600" />
+                  Appearance
+                </CardTitle>
+                <CardDescription>
+                  Customize how the application looks for you
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-christ-blue-dark mb-4">Email Notifications</h3>
-                  <div className="space-y-3">
-                    <label className="flex items-center justify-between p-4 bg-christ-ivory/20 rounded-lg">
-                      <div>
-                        <div className="font-medium text-christ-blue-dark">New User Registrations</div>
-                        <div className="text-sm text-christ-blue-dark/70">Notify admins when new users register</div>
-                      </div>
-                      <input type="checkbox" defaultChecked />
-                    </label>
-
-                    <label className="flex items-center justify-between p-4 bg-christ-ivory/20 rounded-lg">
-                      <div>
-                        <div className="font-medium text-christ-blue-dark">System Alerts</div>
-                        <div className="text-sm text-christ-blue-dark/70">Critical system notifications</div>
-                      </div>
-                      <input type="checkbox" defaultChecked />
-                    </label>
-
-                    <label className="flex items-center justify-between p-4 bg-christ-ivory/20 rounded-lg">
-                      <div>
-                        <div className="font-medium text-christ-blue-dark">Weekly Reports</div>
-                        <div className="text-sm text-christ-blue-dark/70">Send weekly usage summaries</div>
-                      </div>
-                      <input type="checkbox" />
-                    </label>
+                  <label className="block text-sm font-medium text-primary mb-3 font-body">Theme Preference</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: 'light', label: 'Light', icon: Sun },
+                      { id: 'dark', label: 'Dark', icon: Moon },
+                      { id: 'system', label: 'System', icon: Monitor },
+                    ].map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => setTheme(option.id)}
+                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 ${
+                          theme === option.id
+                            ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                            : 'border-violet-200 dark:border-violet-800 hover:border-violet-300 dark:hover:border-violet-700'
+                        }`}
+                      >
+                        <option.icon className={`w-6 h-6 ${theme === option.id ? 'text-violet-600' : 'text-gray-400'}`} />
+                        <span className={`text-sm font-medium ${theme === option.id ? 'text-primary' : 'text-secondary'}`}>
+                          {option.label}
+                        </span>
+                        {theme === option.id && (
+                          <Check className="w-4 h-4 text-violet-600 mt-1" />
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-              <div className="flex gap-4 pt-6">
-                <Button className="btn-primary">
-                  Save Notification Settings
-                </Button>
-              </div>
-            </div>
-          )}
-        </Card>
+          {/* Notifications Settings */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-heading">
+                  <Bell className="w-5 h-5 text-violet-600" />
+                  Notifications
+                </CardTitle>
+                <CardDescription>
+                  Manage how you receive notifications
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className="flex items-center justify-between p-4 rounded-xl bg-violet-50/30 dark:bg-violet-900/10 border border-violet-200/20 dark:border-violet-800/20"
+                  >
+                    <div>
+                      <p className="font-semibold text-primary font-heading">{notification.label}</p>
+                      <p className="text-sm text-secondary font-body mt-0.5">{notification.description}</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" defaultChecked={notification.enabled} className="sr-only peer" />
+                      <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
+                    </label>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Privacy Settings */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Card className="border-violet-200/20 dark:border-violet-800/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-heading">
+                  <Shield className="w-5 h-5 text-violet-600" />
+                  Privacy Settings
+                </CardTitle>
+                <CardDescription>
+                  Control who can see your profile information
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  {privacyOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setSelectedPrivacy(option.id)}
+                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${
+                        selectedPrivacy === option.id
+                          ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
+                          : 'border-violet-200 dark:border-violet-800 hover:border-violet-300 dark:hover:border-violet-700'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <p className={`font-semibold font-heading ${selectedPrivacy === option.id ? 'text-primary' : 'text-secondary'}`}>
+                          {option.label}
+                        </p>
+                        <p className="text-sm text-secondary font-body mt-0.5">{option.description}</p>
+                      </div>
+                      {selectedPrivacy === option.id && (
+                        <Check className="w-5 h-5 text-violet-600" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

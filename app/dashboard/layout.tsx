@@ -20,17 +20,26 @@ export default function Layout({
     }
   }, [isAuthenticated, loading, router])
 
+  // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background-secondary">
-        <div className="text-center space-y-4">
-          <Loading size="lg" />
-          <p className="text-text-secondary font-body animate-pulse">Loading dashboard...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800">
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-2xl shadow-violet-500/30 animate-spin-slow">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm" />
+            </div>
+            <div className="absolute inset-0 w-20 h-20 rounded-2xl border-4 border-violet-300 dark:border-violet-700 animate-ping" />
+          </div>
+          <p className="text-lg font-medium text-slate-600 dark:text-slate-300 font-heading animate-pulse">
+            Loading dashboard...
+          </p>
         </div>
       </div>
     )
   }
 
+  // Don't render anything if not authenticated (will redirect)
   if (!isAuthenticated) {
     return null
   }
